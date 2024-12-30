@@ -58,7 +58,7 @@ func trace(ch chan Result, i int) {
 		}
 	}
 	c := color.New(color.FgRed).Add(color.Bold).SprintFunc()
-	s := fmt.Sprintf("%v %-15s %v", names[i], ips[i], c("测试超时"))
+	s := fmt.Sprintf("%v %-15s %v", names[i], ips[i], c("未知线路"))
 	ch <- Result{i, s}
 }
 
