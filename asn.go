@@ -19,7 +19,8 @@ var (
 	names = []string{"北京电信", "北京联通", "北京移动", "上海电信", "上海联通", "上海移动", "广州电信", "广州联通", "广州移动",
 		"成都电信", "成都联通", "成都移动"}
 	m = map[string]string{"AS4134": "电信163  [普通线路]", "AS4809": "电信CN2  [优质线路]", "AS4837": "联通4837 [普通线路]",
-		"AS9929": "联通9929 [优质线路]", "AS58807": "移动CMIN2[优质线路]", "AS9808": "移动CMI  [普通线路]", "AS58453": "移动CMI  [普通线路]", "AS-CTG-CN": "电信CN2-CTG  [优化线路]"}
+		"AS9929": "联通9929 [优质线路]", "AS58807": "移动CMIN2[优质线路]", "AS9808": "移动CMI  [普通线路]", 
+			      "AS58453": "移动CMI  [普通线路]", "AS-CTG-CN": "电信CTG  [优化线路]", "AS2914": "日本NTT  [普通线路]"}
 )
 
 func trace(ch chan Result, i int) {
@@ -78,6 +79,8 @@ func ipAsn(ip string) string {
 		return "AS58453"
 	case strings.HasPrefix(ip, "203.22"):
 		return "AS-CTG-CN"
+	case strings.HasPrefix(ip, "129.250"):
+		return "AS2914"
 	default:
 		return ""
 	}
