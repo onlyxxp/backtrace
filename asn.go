@@ -48,6 +48,8 @@ func trace(ch chan Result, i int) {
 				c = color.New(color.FgHiBlue).Add(color.Bold).SprintFunc()
 			case "AS-CTG-CN":
 				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
+			case "AS4812":
+				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
 			default:
 				c = color.New(color.FgWhite).Add(color.Bold).SprintFunc()
 			}
