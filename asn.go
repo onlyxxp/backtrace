@@ -43,10 +43,10 @@ func trace(ch chan Result, i int) {
 				c = color.New(color.FgHiYellow).Add(color.Bold).SprintFunc()
 			case "AS4809":
 				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
-			case "AS-CTG-CN":
-				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
 			case "AS58807":
 				c = color.New(color.FgHiBlue).Add(color.Bold).SprintFunc()
+			case "AS-CTG-CN":
+				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
 			default:
 				c = color.New(color.FgWhite).Add(color.Bold).SprintFunc()
 			}
@@ -68,8 +68,6 @@ func ipAsn(ip string) string {
 		return "AS4809"
 	case strings.HasPrefix(ip, "202.97"):
 		return "AS4134"
-	case strings.HasPrefix(ip, "203.22"):
-		return "AS-CTG-CN"	
 	case strings.HasPrefix(ip, "218.105") || strings.HasPrefix(ip, "210.51"):
 		return "AS9929"
 	case strings.HasPrefix(ip, "219.158"):
@@ -78,6 +76,8 @@ func ipAsn(ip string) string {
 		return "AS58807"
 	case strings.HasPrefix(ip, "223.118") || strings.HasPrefix(ip, "223.119") || strings.HasPrefix(ip, "223.120") || strings.HasPrefix(ip, "223.121"):
 		return "AS58453"
+	case strings.HasPrefix(ip, "203.22"):
+		return "AS-CTG-CN"
 	default:
 		return ""
 	}
