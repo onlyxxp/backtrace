@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"log"
 	"net"
 	"slices"
 	"strings"
@@ -15,8 +14,13 @@ type Result struct {
 }
 
 var (
-	ips = []string{"219.141.140.10", "202.106.195.68", "221.179.155.161", "202.96.209.133", "210.22.97.1",
-		"211.136.112.200", "58.60.188.222", "210.21.196.6", "120.196.165.24", "61.139.2.69", "119.6.6.6",
+	//ips = []string{"219.141.140.10", "202.106.195.68", "221.179.155.161", "202.96.209.133", "210.22.97.1",
+	//	"211.136.112.200", "58.60.188.222", "210.21.196.6", "120.196.165.24", "61.139.2.69", "119.6.6.6",
+	//	"211.137.96.205"}
+	//names = []string{"北京电信", "北京联通", "北京移动", "上海电信", "上海联通", "上海移动", "广州电信", "广州联通", "广州移动",
+	//"成都电信", "成都联通", "成都移动"}
+	ips = []string{"ipv4.pek-4134.endpoint.nxtrace.org.", "ipv4.pek-4837.endpoint.nxtrace.org.", "ipv4.pek-9808.endpoint.nxtrace.org.", "ipv4.sha-4134.endpoint.nxtrace.org.", "ipv4.sha-4837.endpoint.nxtrace.org.",
+		"ipv4.sha-9808.endpoint.nxtrace.org.", "ipv4.can-4134.endpoint.nxtrace.org.", "ipv4.can-4837.endpoint.nxtrace.org.", "ipv4.can-9808.endpoint.nxtrace.org.", "61.139.2.69", "119.6.6.6",
 		"211.137.96.205"}
 	names = []string{"北京电信", "北京联通", "北京移动", "上海电信", "上海联通", "上海移动", "广州电信", "广州联通", "广州移动",
 		"成都电信", "成都联通", "成都移动"}
@@ -70,13 +74,13 @@ func trace(ch chan Result, i int) {
 	c := color.New(color.FgRed).Add(color.Bold).SprintFunc()
 	s := fmt.Sprintf("%v %-15s %v :%v", names[i], ips[i], c("未知线路.."), lastIpUnknow)
 
-	for hop, h := range hops {
-		for node, n := range h.Nodes {
-			lastIpUnknow = n.IP.String()
-			//找到asn
-			log.Printf(".  .  .  . %v %v %v", hop, node, lastIpUnknow)
-		}
-	}
+	//for hop, h := range hops {
+	//	for node, n := range h.Nodes {
+	//		lastIpUnknow = n.IP.String()
+	//		//找到asn
+	//		log.Printf(".  .  .  . %v %v %v", hop, node, lastIpUnknow)
+	//	}
+	//}
 
 	ch <- Result{i, s}
 }
