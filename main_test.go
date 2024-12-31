@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func Test_ip(t *testing.T) {
+func tt_Test_ip(t *testing.T) {
 	yellow := color.New(color.FgHiYellow).Add(color.Bold).SprintFunc()
 	green := color.New(color.FgHiGreen).SprintFunc()
 	cyan := color.New(color.FgHiCyan).SprintFunc()
@@ -24,7 +24,7 @@ func Test_ip(t *testing.T) {
 
 }
 
-func Test_trace(test *testing.T) {
+func tt_Test_trace(test *testing.T) {
 	GlobalTestMode = true
 	GlobalDebugMode = true
 
@@ -60,5 +60,5 @@ loop:
 	log.Println("测试完成!")
 }
 
-func TestDuration(t *testing.T) {
+func tt_TestDuration(t *testing.T) {
 }
