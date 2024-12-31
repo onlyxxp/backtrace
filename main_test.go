@@ -26,7 +26,7 @@ func Test_ip(t *testing.T) {
 
 func Test_trace(test *testing.T) {
 	GlobalTestMode = true
-	GlobalTestMode = true
+	GlobalDebugMode = true
 
 	Test_ip(test)
 
@@ -45,8 +45,8 @@ func Test_trace(test *testing.T) {
 loop:
 	for range s {
 		select {
-		case o := <-c:
-			s[o.i] = o.s
+		case result := <-c:
+			s[result.i] = result.s
 		case <-t:
 			break loop
 		}

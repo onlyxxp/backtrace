@@ -16,8 +16,8 @@ import (
 
 // DefaultConfig is the default configuration for Tracer.
 var DefaultConfig = Config{
-	Delay:    30 * time.Millisecond,
-	Timeout:  5000 * time.Millisecond,
+	Delay:    100 * time.Millisecond,
+	Timeout:  2000 * time.Millisecond,
 	MaxHops:  30,
 	Count:    1,
 	Networks: []string{"ip4:icmp", "ip4:ip"},
@@ -63,32 +63,41 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, h func(reply *Reply)) err
 	delay := time.NewTicker(t.Delay)
 	defer delay.Stop()
 
+	DebugLogPrintf("ip[%v] befor ping ", ip)
+
 	max := t.MaxHops
 	for n := 0; n < t.Count; n++ {
 		for ttl := 1; ttl <= t.MaxHops && ttl <= max; ttl++ {
+			DebugLogPrintf("ip[%v] NewTicker ping beging  ", ip)
 			err = sess.Ping(ttl)
+			DebugLogPrintf("ip[%v] NewTicker ping end  ", ip)
 			if err != nil {
 				return err
 			}
 			select {
 			case <-delay.C:
+				DebugLogPrintf("ip[%v] NewTicker delay.C ", ip)
 			case r := <-sess.Receive():
+				DebugLogPrintf("ip[%v] sess.Receive() ", ip)
 				if max > r.Hops && ip.Equal(r.IP) {
 					max = r.Hops
 				}
 				h(r)
 			case <-ctx.Done():
+				DebugLogPrintf("ip[%v] ctx.Done()", ip)
 				return ctx.Err()
 			}
 		}
 	}
 	if sess.isDone(max) {
+		DebugLogPrintf("ip[%v] sess.isDone(max) ", ip)
 		return nil
 	}
 	deadline := time.After(t.Timeout)
 	for {
 		select {
 		case r := <-sess.Receive():
+			DebugLogPrintf("ip[%v] time.After(%v) sess.Receive() ", ip, t.Timeout)
 			if max > r.Hops && ip.Equal(r.IP) {
 				max = r.Hops
 			}
@@ -97,8 +106,10 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, h func(reply *Reply)) err
 				return nil
 			}
 		case <-deadline:
+			DebugLogPrintf("ip[%v] time.After(%v) deadline ", ip, t.Timeout)
 			return nil
 		case <-ctx.Done():
+			DebugLogPrintf("ip[%v] time.After(%v) ctx.Done() ", ip, t.Timeout)
 			return ctx.Err()
 		}
 	}
@@ -114,14 +125,18 @@ func (t *Tracer) NewSession(ip net.IP) (*Session, error) {
 }
 
 func (t *Tracer) init() {
+	DebugLogPrintf("~~~~~~~~~~~~~once init ~~~~ start ")
 	for _, network := range t.Networks {
 		t.conn, t.err = t.listen(network, t.Addr)
 		if t.err != nil {
+			DebugLogPrintf("init listenr error %s", t.err)
 			continue
 		}
 		go t.serve(t.conn)
+		DebugLogPrintf("once init ~~~~ end %s %s", network, t.Addr)
 		return
 	}
+	DebugLogPrintf("~~~~~~~~~~~once init ~~~~ end ")
 }
 
 func (t *Tracer) listen(network string, laddr *net.IPAddr) (*net.IPConn, error) {
