@@ -17,8 +17,8 @@ import (
 // DefaultConfig is the default configuration for Tracer.
 var DefaultConfig = Config{
 	Delay:    100 * time.Millisecond,
-	Timeout:  2000 * time.Millisecond,
-	MaxHops:  30,
+	Timeout:  3000 * time.Millisecond,
+	MaxHops:  15,
 	Count:    1,
 	Networks: []string{"ip4:icmp", "ip4:ip"},
 }
@@ -93,6 +93,9 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, h func(reply *Reply)) err
 		DebugLogPrintf("ip[%v] sess.isDone(max) ", ip)
 		return nil
 	}
+
+	DebugLogPrintf("ip[%v] go to deadline =========== ", ip)
+
 	deadline := time.After(t.Timeout)
 	for {
 		select {

@@ -46,8 +46,10 @@ loop:
 	for range s {
 		select {
 		case result := <-c:
+			DebugLogPrintf("go to loop result %s %s ***** ", result.i, result.s)
 			s[result.i] = result.s
 		case <-t:
+			DebugLogPrintf("go to loop result case <-t")
 			break loop
 		}
 	}
