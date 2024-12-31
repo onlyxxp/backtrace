@@ -54,7 +54,7 @@ func trace(ch chan Result, i int) {
 	for _, h := range hops {
 		//DebugLogPrintf("ip[%v] hops[%v] -- %v ", ips[i], i, h)
 
-		for _, n := range h.Nodes {
+		for ii, n := range h.Nodes {
 			lastIpUnknow = n.IP.String()
 			asn := ipAsn(n.IP.String())
 			as := m[asn]
@@ -85,7 +85,7 @@ func trace(ch chan Result, i int) {
 
 	// 没找到asn
 	c := color.New(color.FgRed).Add(color.Bold).SprintFunc()
-	s := fmt.Sprintf("%v %-15s %v :%v", names[i], ips[i], c("未知线路.."), lastIpUnknow)
+	s := fmt.Sprintf("%v %-15s %v :%-15s", names[i], ips[i], c("未知线路.."), lastIpUnknow)
 
 	//for hop, h := range hops {
 	//	for node, n := range h.Nodes {
