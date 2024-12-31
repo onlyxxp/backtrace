@@ -73,7 +73,7 @@ func trace(ch chan Result, i int) {
 		for node, n := range h.Nodes {
 			lastIpUnknow = n.IP.String()
 			//找到asn
-			log.Println(".  .  .  . %v %v %v", hop, node, lastIpUnknow)
+			log.Printf(".  .  .  . %v %v %v", hop, node, lastIpUnknow)
 		}
 	}
 
