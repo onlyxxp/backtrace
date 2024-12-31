@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func tt_Test_ip(t *testing.T) {
+func Test_ip(t *testing.T) {
 	yellow := color.New(color.FgHiYellow).Add(color.Bold).SprintFunc()
 	green := color.New(color.FgHiGreen).SprintFunc()
 	cyan := color.New(color.FgHiCyan).SprintFunc()
@@ -24,14 +24,14 @@ func tt_Test_ip(t *testing.T) {
 
 }
 
-func tt_Test_trace(test *testing.T) {
+func Test_trace(test *testing.T) {
 	GlobalTestMode = true
 	GlobalDebugMode = true
 
 	Test_ip(test)
 
 	var (
-		s [12]string
+		s [16]string
 		c = make(chan Result)
 		t = time.After(time.Second * 10)
 	)
