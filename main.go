@@ -25,10 +25,6 @@ func main() {
 		t = time.After(time.Second * 10)
 	)
 
-	go func() {
-		http.Get("https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fzhanghanyun%2Fbacktrace&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false")
-	}()
-
 	yellow := color.New(color.FgHiYellow).Add(color.Bold).SprintFunc()
 	green := color.New(color.FgHiGreen).SprintFunc()
 	cyan := color.New(color.FgHiCyan).SprintFunc()

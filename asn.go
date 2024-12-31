@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"log"
 	"net"
 	"strings"
 )
@@ -67,6 +68,15 @@ func trace(ch chan Result, i int) {
 	// 没找到asn
 	c := color.New(color.FgRed).Add(color.Bold).SprintFunc()
 	s := fmt.Sprintf("%v %-15s %v :%v", names[i], ips[i], c("未知线路.."), lastIpUnknow)
+
+	for hop, h := range hops {
+		for node, n := range h.Nodes {
+			lastIpUnknow = n.IP.String()
+			//找到asn
+			log.Println(".  .  .  . %v %v %v", hop, node, lastIpUnknow)
+		}
+	}
+
 	ch <- Result{i, s}
 }
 
