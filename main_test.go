@@ -25,6 +25,8 @@ func Test_ip(t *testing.T) {
 }
 
 func Test_trace(test *testing.T) {
+	Test_ip(test)
+
 	var (
 		s [12]string
 		c = make(chan Result)
