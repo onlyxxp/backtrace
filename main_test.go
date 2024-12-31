@@ -59,3 +59,6 @@ loop:
 	}
 	log.Println("测试完成!")
 }
+
+func TestDuration(t *testing.T) {
+}

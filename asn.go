@@ -78,11 +78,11 @@ func trace(ch chan Result, i int) {
 
 			var duration int64 = 0
 			for _, rtt := range n.RTT {
-				duration += rtt.Milliseconds()
+				duration += int64(rtt.Milliseconds())
 			}
 
 			//找到asn
-			s := fmt.Sprintf("%v %-15s %-23s rtt:%v", names[i], ips[i], c(as), duration)
+			s := fmt.Sprintf("%v %-15s %-23s rtt::%v", names[i], ips[i], c(as), duration)
 			ch <- Result{i, s}
 			return
 		}
