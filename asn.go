@@ -50,7 +50,7 @@ func trace(ch chan Result, i int) {
 			case "AS58807":
 				c = color.New(color.FgHiBlue).Add(color.Bold).SprintFunc()
 			case "AS-CTG-CN":
-				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
+				c = color.New(color.FgHiCyan).Add(color.Bold).SprintFunc()
 			case "AS4812":
 				c = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
 			default:
@@ -66,7 +66,7 @@ func trace(ch chan Result, i int) {
 
 	// 没找到asn
 	c := color.New(color.FgRed).Add(color.Bold).SprintFunc()
-	s := fmt.Sprintf("%v %-15s %v-%v", names[i], ips[i], c("未知线路"), lastIpUnknow)
+	s := fmt.Sprintf("%v %-15s %v :%v", names[i], ips[i], c("未知线路.."), lastIpUnknow)
 	ch <- Result{i, s}
 }
 
