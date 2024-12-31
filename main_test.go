@@ -26,6 +26,7 @@ func Test_ip(t *testing.T) {
 
 func Test_trace(test *testing.T) {
 	GlobalTestMode = true
+	GlobalTestMode = true
 
 	Test_ip(test)
 

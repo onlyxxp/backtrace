@@ -10,7 +10,7 @@ import (
 )
 
 var GlobalTestMode bool = false
-var GlobalDebugMode bool = true
+var GlobalDebugMode bool = false
 
 func DebugLogPrintf(format string, v ...any) {
 	if GlobalDebugMode {
