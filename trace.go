@@ -181,6 +181,7 @@ func (t *Tracer) serve(conn *net.IPConn) error {
 			return err
 		}
 		err = t.serveData(from.IP, buf[:n])
+		DebugLogPrintf("serve %s serveData %s", from.IP, buf[:n])
 		if err != nil {
 			continue
 		}
