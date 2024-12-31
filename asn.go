@@ -85,7 +85,7 @@ func ipAsn(ip string) string {
 	switch {
 	case strings.HasPrefix(ip, "59.43"):
 		return "AS4809"
-	case strings.HasPrefix(ip, "202.97"):
+	case strings.HasPrefix(ip, "202.97") || strings.HasPrefix(ip, "202.105"):
 		return "AS4134"
 	case strings.HasPrefix(ip, "218.105") || strings.HasPrefix(ip, "210.51"):
 		return "AS9929"
