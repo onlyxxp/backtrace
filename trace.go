@@ -16,8 +16,8 @@ import (
 
 // DefaultConfig is the default configuration for Tracer.
 var DefaultConfig = Config{
-	Delay:    200 * time.Millisecond,
-	Timeout:  2000 * time.Millisecond,
+	Delay:    30 * time.Millisecond,
+	Timeout:  1200 * time.Millisecond,
 	MaxHops:  30,
 	Count:    1,
 	Networks: []string{"ip4:icmp", "ip4:ip"},
