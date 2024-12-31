@@ -54,7 +54,7 @@ func trace(ch chan Result, i int) {
 	for _, h := range hops {
 		//DebugLogPrintf("ip[%v] hops[%v] -- %v ", ips[i], i, h)
 
-		for ii, n := range h.Nodes {
+		for _, n := range h.Nodes {
 			lastIpUnknow = n.IP.String()
 			asn := ipAsn(n.IP.String())
 			as := m[asn]
