@@ -29,7 +29,7 @@ type IpInfo struct {
 func main() {
 
 	var (
-		s [12]string
+		s [16]string
 		c = make(chan Result)
 		t = time.After(time.Second * 10)
 	)
