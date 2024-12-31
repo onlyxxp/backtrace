@@ -19,8 +19,8 @@ var (
 	names = []string{"北京电信", "北京联通", "北京移动", "上海电信", "上海联通", "上海移动", "广州电信", "广州联通", "广州移动",
 		"成都电信", "成都联通", "成都移动"}
 	m = map[string]string{"AS4134": "电信163  [普通线路]", "AS4809": "电信CN2  [优质线路]", "AS4837": "联通4837 [普通线路]",
-		"AS9929": "联通9929 [优质线路]", "AS58807": "移动CMIN2[优质线路]", "AS9808": "移动CMI  [普通线路]", 
-			      "AS58453": "移动CMI  [普通线路]", "AS-CTG-CN": "电信CTG  [优化线路]", "AS4812": "电信跳墙  [优化线路]"}
+		"AS9929": "联通9929 [优质线路]", "AS58807": "移动CMIN2[优质线路]", "AS9808": "移动CMI  [普通线路]",
+		"AS58453": "移动CMI  [普通线路]", "AS-CTG-CN": "电信CTG  [优化线路]", "AS4812": "电信跳墙  [优化线路]"}
 )
 
 func trace(ch chan Result, i int) {
@@ -32,14 +32,17 @@ func trace(ch chan Result, i int) {
 		return
 	}
 
+	lastIpUnknow := ""
+
 	for _, h := range hops {
 		for _, n := range h.Nodes {
+			lastIpUnknow = n.IP.String()
 			asn := ipAsn(n.IP.String())
 			as := m[asn]
 			var c func(a ...interface{}) string
 			switch asn {
 			case "":
-				continue
+				continue //没找到asn
 			case "AS9929":
 				c = color.New(color.FgHiYellow).Add(color.Bold).SprintFunc()
 			case "AS4809":
@@ -54,13 +57,16 @@ func trace(ch chan Result, i int) {
 				c = color.New(color.FgWhite).Add(color.Bold).SprintFunc()
 			}
 
+			//找到asn
 			s := fmt.Sprintf("%v %-15s %-23s", names[i], ips[i], c(as))
 			ch <- Result{i, s}
 			return
 		}
 	}
+
+	// 没找到asn
 	c := color.New(color.FgRed).Add(color.Bold).SprintFunc()
-	s := fmt.Sprintf("%v %-15s %v", names[i], ips[i], c("未知线路"))
+	s := fmt.Sprintf("%v %-15s %v-%v", names[i], ips[i], c("未知线路"), lastIpUnknow)
 	ch <- Result{i, s}
 }
 
@@ -81,9 +87,9 @@ func ipAsn(ip string) string {
 		return "AS58453"
 	case strings.HasPrefix(ip, "203.22"):
 		return "AS-CTG-CN"
-	case strings.HasPrefix(ip, "61.152")  || strings.HasPrefix(ip, "101.95") :
+	case strings.HasPrefix(ip, "61.152") || strings.HasPrefix(ip, "101.95"):
 		return "AS4812"
-		
+
 	// case strings.HasPrefix(ip, "129.250"):  NTT
 	// 	return "AS2914"
 	default:
