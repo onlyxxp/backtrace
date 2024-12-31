@@ -16,7 +16,7 @@ import (
 
 // DefaultConfig is the default configuration for Tracer.
 var DefaultConfig = Config{
-	Delay:    200 * time.Millisecond,
+	Delay:    500 * time.Millisecond,
 	Timeout:  2000 * time.Millisecond,
 	MaxHops:  30,
 	Count:    1,
