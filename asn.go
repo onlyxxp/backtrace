@@ -37,11 +37,11 @@ var (
 		"AS9808":    "移动CMI  [普通线路]",
 		"AS58453":   "移动CMI  [普通线路]",
 		"AS-CTG-CN": "电信CTG  [优化线路]",
-		"跳墙":      "路由bug  [跳墙线路]"}
+		"跳墙":        "路由bug  [跳墙线路]"}
 )
 
 func trace(ch chan Result, i int) {
-
+	//log.Printf("trace begin for %v", i)
 	hops, err := Trace(net.ParseIP(ips[i]))
 	if err != nil {
 		s := fmt.Sprintf("%v %-15s %v", names[i], ips[i], err)
@@ -51,7 +51,9 @@ func trace(ch chan Result, i int) {
 
 	lastIpUnknow := ""
 
-	for _, h := range hops {
+	for i, h := range hops {
+		DebugLogPrintf("ip[%v] hops[%v] -- %v ", ips[i], i, h)
+
 		for _, n := range h.Nodes {
 			lastIpUnknow = n.IP.String()
 			asn := ipAsn(n.IP.String())
@@ -75,7 +77,7 @@ func trace(ch chan Result, i int) {
 			}
 
 			//找到asn
-			s := fmt.Sprintf("%v %-15s %-23s", names[i], ips[i], c(as))
+			s := fmt.Sprintf("%v %-15s %-23s rtt:%v", names[i], ips[i], c(as), n.RTT)
 			ch <- Result{i, s}
 			return
 		}

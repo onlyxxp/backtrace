@@ -457,9 +457,15 @@ func Trace(ip net.IP) ([]*Hop, error) {
 		hops = append(hops, h)
 		return h
 	}
+
+	DebugLogPrintf("%v DefaultTracer.Trace begin ", ip)
+
 	err := DefaultTracer.Trace(context.Background(), ip, func(r *Reply) {
 		touch(r.Hops).Add(r)
 	})
+
+	DebugLogPrintf("%v DefaultTracer.Trace end ", ip)
+
 	if err != nil && err != context.DeadlineExceeded {
 		return nil, err
 	}

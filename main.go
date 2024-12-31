@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+var GlobalTestMode bool = false
+var GlobalDebugMode bool = true
+
+func DebugLogPrintf(format string, v ...any) {
+	if GlobalDebugMode {
+		log.Printf(format, v...)
+	}
+}
+
 type IpInfo struct {
 	Ip      string `json:"ip"`
 	City    string `json:"city"`
