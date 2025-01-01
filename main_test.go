@@ -28,43 +28,6 @@ func Test_main(test *testing.T) {
 	main()
 }
 
-//
-//func Test_trace(test *testing.T) {
-//	GlobalTestMode = true
-//	GlobalDebugMode = true
-//
-//	Test_ip(test)
-//
-//	var (
-//		s [16]string
-//		c = make(chan Result)
-//		t = time.After(time.Second * 10)
-//	)
-//
-//	log.Println("正在测试三网回程路由...")
-//
-//	for i := range ips {
-//		go trace(c, i)
-//	}
-//
-//loop:
-//	for range s {
-//		select {
-//		case result := <-c:
-//			DebugLogPrintf("go to loop result %v %s ***** ", result.i, result.s)
-//			s[result.i] = result.s
-//		case <-t:
-//			DebugLogPrintf("*********go to loop result case <-t")
-//			break loop
-//		}
-//	}
-//
-//	for _, r := range s {
-//		log.Println(r)
-//	}
-//	log.Println("测试完成!")
-//}
-
 func TestParams(t *testing.T) {
 	// 获取所有命令行参数
 	args := os.Args

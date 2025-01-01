@@ -27,26 +27,20 @@ type IpInfo struct {
 }
 
 func main() {
-	if GlobalTestMode {
-		ips = ips[:0]
-		ips = append(ips, "47.245.122.115")
-	}
-
 	var (
 		s [16]string
 		c = make(chan Result)
 		t = time.After(time.Second * 10)
 	)
 
-	green := color.New(color.FgHiGreen).SprintFunc()
-	cyan := color.New(color.FgHiCyan).SprintFunc()
-	log.Println("正在测试三网回程路由...")
+	if !GlobalTestMode {
+		network_info()
+	} else {
+		ips = ips[:0]
+		ips = append(ips, "47.245.122.115")
 
-	rsp, _ := http.Get("http://ipinfo.io")
-	info := IpInfo{}
-	json.NewDecoder(rsp.Body).Decode(&info)
-
-	fmt.Println(green("国家: ") + cyan(info.Country) + green(" 城市: ") + cyan(info.City) + green(" 服务商: ") + cyan(info.Org))
+		t = time.After(time.Second * 3)
+	}
 
 	for i := range ips {
 		go trace(c, i)
@@ -58,6 +52,8 @@ loop:
 		case o := <-c:
 			s[o.i] = o.s
 		case <-t:
+			DebugLogPrintf("~~~~~loop loop case <-t: time out")
+			DebugLogPrintf("~~~~~loop loop case <-t: time out")
 			break loop
 		}
 	}
@@ -65,5 +61,17 @@ loop:
 	for _, r := range s {
 		fmt.Println(r)
 	}
-	log.Println(green("测试完成!"))
+	log.Println(color.New(color.FgHiGreen).SprintFunc()("测试完成!"))
+}
+
+func network_info() {
+	green := color.New(color.FgHiGreen).SprintFunc()
+	cyan := color.New(color.FgHiCyan).SprintFunc()
+	log.Println("正在测试三网回程路由...")
+
+	rsp, _ := http.Get("http://ipinfo.io")
+	info := IpInfo{}
+	json.NewDecoder(rsp.Body).Decode(&info)
+
+	fmt.Println(green("国家: ") + cyan(info.Country) + green(" 城市: ") + cyan(info.City) + green(" 服务商: ") + cyan(info.Org))
 }

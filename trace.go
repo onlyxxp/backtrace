@@ -53,7 +53,7 @@ type Tracer struct {
 }
 
 // Trace starts sending IP packets increasing TTL until MaxHops and calls h for each reply.
-func (t *Tracer) Trace(ctx context.Context, ip net.IP, h func(reply *Reply)) error {
+func (t *Tracer) Trace(ctx context.Context, ip net.IP, hFunc func(reply *Reply)) error {
 	sess, err := t.NewSession(ip)
 	if err != nil {
 		return err
@@ -70,19 +70,19 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, h func(reply *Reply)) err
 		for ttl := 1; ttl <= t.MaxHops && ttl <= max; ttl++ {
 			DebugLogPrintf("ip[%v] NewTicker ping beging  ", ip)
 			err = sess.Ping(ttl)
-			DebugLogPrintf("ip[%v] NewTicker ping end  ", ip)
+			DebugLogPrintf("ip[%v] NewTicker ping end err=%s ", ip, err)
 			if err != nil {
 				return err
 			}
 			select {
 			case <-delay.C:
-				DebugLogPrintf("ip[%v] NewTicker delay.C ", ip)
+				//DebugLogPrintf("ip[%v] NewTicker delay.C ", ip)
 			case r := <-sess.Receive():
 				DebugLogPrintf("ip[%v] sess.Receive() ", ip)
 				if max > r.Hops && ip.Equal(r.IP) {
 					max = r.Hops
 				}
-				h(r)
+				hFunc(r)
 			case <-ctx.Done():
 				DebugLogPrintf("ip[%v] ctx.Done()", ip)
 				return ctx.Err()
@@ -104,7 +104,7 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, h func(reply *Reply)) err
 			if max > r.Hops && ip.Equal(r.IP) {
 				max = r.Hops
 			}
-			h(r)
+			hFunc(r)
 			if sess.isDone(max) {
 				return nil
 			}
@@ -176,12 +176,14 @@ func (t *Tracer) serve(conn *net.IPConn) error {
 	defer conn.Close()
 	buf := make([]byte, 1500)
 	for {
+		DebugLogPrintf("serve conn.ReadFromIP with buf")
 		n, from, err := conn.ReadFromIP(buf)
 		if err != nil {
 			return err
 		}
+		DebugLogPrintf("serve %s serveData begin %s", from.IP, buf[:n])
 		err = t.serveData(from.IP, buf[:n])
-		DebugLogPrintf("serve %s serveData %s", from.IP, buf[:n])
+		DebugLogPrintf("serve %s serveData end %s", from.IP, buf[:n])
 		if err != nil {
 			continue
 		}
@@ -195,6 +197,7 @@ func (t *Tracer) serveData(from net.IP, b []byte) error {
 	}
 	now := time.Now()
 	msg, err := icmp.ParseMessage(ProtocolICMP, b)
+	DebugLogPrintf("%s ~~serveData ParseMessage msg is %v ", from, msg)
 	if err != nil {
 		DebugLogPrintf("%s ~~!!!!!!! err is %s ", from, err)
 		return err
@@ -231,7 +234,8 @@ func (t *Tracer) sendRequest(dst net.IP, ttl int) (*packet, error) {
 	id := uint16(atomic.AddUint32(&t.seq, 1))
 	b := newPacket(id, dst, ttl)
 	req := &packet{dst, id, ttl, time.Now()}
-	_, err := t.conn.WriteToIP(b, &net.IPAddr{IP: dst})
+	n, err := t.conn.WriteToIP(b, &net.IPAddr{IP: dst})
+	DebugLogPrintf("ip[%v] sendRequest conn.WriteToIP return %v  ", dst, n)
 	if err != nil {
 		return nil, err
 	}
@@ -290,6 +294,7 @@ func newSession(t *Tracer, ip net.IP) *Session {
 		ip: ip,
 		ch: make(chan *Reply, 64),
 	}
+	DebugLogPrintf("newSession make for ip %s ", ip)
 	t.addSession(s)
 	return s
 }
@@ -484,6 +489,7 @@ func Trace(ip net.IP) ([]*Hop, error) {
 	//DebugLogPrintf("%v DefaultTracer.Trace begin ", ip)
 
 	err := DefaultTracer.Trace(context.Background(), ip, func(r *Reply) {
+		DebugLogPrintf("ip[%v] DefaultTracer.Trace h func exec  ", ip)
 		touch(r.Hops).Add(r)
 	})
 
