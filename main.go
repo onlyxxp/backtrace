@@ -27,20 +27,20 @@ type IpInfo struct {
 }
 
 func main() {
-	var (
-		s [16]string
-		c = make(chan Result)
-		t = time.After(time.Second * 10)
-	)
-
-	if !GlobalTestMode {
-		network_info()
-	} else {
+	var timeoutSecond = 10
+	if GlobalTestMode {
+		timeoutSecond = 2
 		ips = ips[:0]
 		ips = append(ips, "47.245.122.115")
-
-		t = time.After(time.Second * 3)
+	} else {
+		network_info()
 	}
+
+	var (
+		s       [16]string
+		c       = make(chan Result)
+		timeout = time.After(time.Second * time.Duration(timeoutSecond))
+	)
 
 	for i := range ips {
 		go trace(c, i)
@@ -51,9 +51,11 @@ loop:
 		select {
 		case o := <-c:
 			s[o.i] = o.s
-		case <-t:
-			DebugLogPrintf("~~~~~loop loop case <-t: time out")
-			DebugLogPrintf("~~~~~loop loop case <-t: time out")
+		case <-timeout:
+			DebugLogPrintf("")
+			DebugLogPrintf("")
+			DebugLogPrintf("~~~~~loop loop case <-t: time out %vsecond", timeoutSecond)
+			DebugLogPrintf("~~~~~loop loop case <-t: time out %vsecond", timeoutSecond)
 			break loop
 		}
 	}
