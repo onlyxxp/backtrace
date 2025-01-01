@@ -34,7 +34,6 @@ func main() {
 		t = time.After(time.Second * 10)
 	)
 
-	yellow := color.New(color.FgHiYellow).Add(color.Bold).SprintFunc()
 	green := color.New(color.FgHiGreen).SprintFunc()
 	cyan := color.New(color.FgHiCyan).SprintFunc()
 	log.Println("正在测试三网回程路由...")
@@ -44,7 +43,6 @@ func main() {
 	json.NewDecoder(rsp.Body).Decode(&info)
 
 	fmt.Println(green("国家: ") + cyan(info.Country) + green(" 城市: ") + cyan(info.City) + green(" 服务商: ") + cyan(info.Org))
-	fmt.Println(green("项目地址:"), yellow("https://github.com/zhanghanyun/backtrace"))
 
 	for i := range ips {
 		go trace(c, i)
