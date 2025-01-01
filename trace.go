@@ -196,13 +196,16 @@ func (t *Tracer) serveData(from net.IP, b []byte) error {
 	now := time.Now()
 	msg, err := icmp.ParseMessage(ProtocolICMP, b)
 	if err != nil {
+		DebugLogPrintf("%s ~~!!!!!!! err is %s ", from, err)
 		return err
 	}
 	if msg.Type == ipv4.ICMPTypeEchoReply {
 		echo := msg.Body.(*icmp.Echo)
+		DebugLogPrintf("%s ~~ echo is %s ", from, echo.Data)
 		return t.serveReply(from, &packet{from, uint16(echo.ID), 1, now})
 	}
 	b = getReplyData(msg)
+	DebugLogPrintf("%s ~~serveData ReplyData is %s ", from, b)
 	if len(b) < ipv4.HeaderLen {
 		return errMessageTooShort
 	}
@@ -467,6 +470,7 @@ func (h *Hop) Add(r *Reply) *Node {
 func Trace(ip net.IP) ([]*Hop, error) {
 	hops := make([]*Hop, 0, DefaultTracer.MaxHops)
 	touch := func(dist int) *Hop {
+		DebugLogPrintf("%s Tracea touch hops is %v ", ip, dist)
 		for _, h := range hops {
 			if h.Distance == dist {
 				return h
@@ -477,7 +481,7 @@ func Trace(ip net.IP) ([]*Hop, error) {
 		return h
 	}
 
-	DebugLogPrintf("%v DefaultTracer.Trace begin ", ip)
+	//DebugLogPrintf("%v DefaultTracer.Trace begin ", ip)
 
 	err := DefaultTracer.Trace(context.Background(), ip, func(r *Reply) {
 		touch(r.Hops).Add(r)

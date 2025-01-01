@@ -27,6 +27,10 @@ type IpInfo struct {
 }
 
 func main() {
+	if GlobalTestMode {
+		ips = ips[:0]
+		ips = append(ips, "47.245.122.115")
+	}
 
 	var (
 		s [16]string
