@@ -75,7 +75,7 @@ func trace(ch chan Result, i int) {
 
 			var duration int64 = 0
 			for _, rtt := range n.RTT {
-				duration += int64(rtt.Milliseconds())
+				duration += rtt.Milliseconds()
 			}
 
 			//找到asn
@@ -109,7 +109,7 @@ func ipAsn(ip string) string {
 		return "AS4134"
 	case strings.HasPrefix(ip, "218.105") || strings.HasPrefix(ip, "210.51"):
 		return "AS9929"
-	case strings.HasPrefix(ip, "219.158"):
+	case strings.HasPrefix(ip, "219.158") || strings.HasPrefix(ip, "221.194"):
 		return "AS4837"
 	case strings.HasPrefix(ip, "223.120.19") || strings.HasPrefix(ip, "223.120.17") || strings.HasPrefix(ip, "223.120.16"):
 		return "AS58807"

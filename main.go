@@ -29,9 +29,9 @@ type IpInfo struct {
 func main() {
 	var timeoutSecond = 10
 	if GlobalTestMode {
-		timeoutSecond = 2
+		//timeoutSecond = 7
 		ips = ips[:0]
-		ips = append(ips, "47.245.122.115")
+		ips = append(ips, "8.220.218.185")
 	} else {
 		network_info()
 	}
@@ -47,7 +47,7 @@ func main() {
 	}
 
 loop:
-	for range s {
+	for index, _ := range s {
 		select {
 		case o := <-c:
 			s[o.i] = o.s
@@ -58,10 +58,22 @@ loop:
 			DebugLogPrintf("~~~~~loop loop case <-t: time out %vsecond", timeoutSecond)
 			break loop
 		}
+
+		if (index + 1) == len(ips) {
+			DebugLogPrintf("index reach, break loop")
+			break loop
+		}
 	}
 
-	for _, r := range s {
+	fmt.Println("")
+	fmt.Println("")
+	for index, r := range s {
 		fmt.Println(r)
+
+		if (index + 1) == len(ips) {
+			DebugLogPrintf("index reach, break Println")
+			break
+		}
 	}
 	log.Println(color.New(color.FgHiGreen).SprintFunc()("测试完成!"))
 }

@@ -17,10 +17,10 @@ import (
 // DefaultConfig is the default configuration for Tracer.
 var DefaultConfig = Config{
 	Delay:    50 * time.Millisecond,
-	Timeout:  500 * time.Millisecond,
+	Timeout:  1000 * time.Millisecond,
 	MaxHops:  15,
 	Count:    1,
-	Networks: []string{"ip4:icmp", "ip4:ip"},
+	Networks: []string{"ip4:ip", "ip4:icmp"},
 }
 
 // DefaultTracer is a tracer with DefaultConfig.
@@ -68,9 +68,9 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, hFunc func(reply *Reply))
 	max := t.MaxHops
 	for n := 0; n < t.Count; n++ {
 		for ttl := 1; ttl <= t.MaxHops && ttl <= max; ttl++ {
-			DebugLogPrintf("ip[%v] NewTicker ping beging  ", ip)
+			//DebugLogPrintf("ip[%v] NewTicker ping beging  ", ip)
 			err = sess.Ping(ttl)
-			DebugLogPrintf("ip[%v] NewTicker ping end err=%s ", ip, err)
+			//DebugLogPrintf("ip[%v] NewTicker ping end err=%s ", ip, err)
 			if err != nil {
 				return err
 			}
@@ -94,8 +94,7 @@ func (t *Tracer) Trace(ctx context.Context, ip net.IP, hFunc func(reply *Reply))
 		return nil
 	}
 
-	DebugLogPrintf("ip[%v] go to deadline =========== ", ip)
-
+	DebugLogPrintf("ip[%v] begin wait response receive ::: ", ip)
 	deadline := time.After(t.Timeout)
 	for {
 		select {
@@ -143,7 +142,8 @@ func (t *Tracer) init() {
 }
 
 func (t *Tracer) listen(network string, laddr *net.IPAddr) (*net.IPConn, error) {
-	conn, err := net.ListenIP(network, laddr)
+	DebugLogPrintf("listen net.ListenIP %s %s", network, laddr)
+	conn, err := net.ListenIP(network, laddr) //ListenIP listens on all available IP addresses of the local system
 	if err != nil {
 		return nil, err
 	}
@@ -176,14 +176,13 @@ func (t *Tracer) serve(conn *net.IPConn) error {
 	defer conn.Close()
 	buf := make([]byte, 1500)
 	for {
-		DebugLogPrintf("serve conn.ReadFromIP with buf")
+		DebugLogPrintf("<----- serve serveData conn.ReadFromIP with buf")
 		n, from, err := conn.ReadFromIP(buf)
 		if err != nil {
 			return err
 		}
-		DebugLogPrintf("serve %s serveData begin %s", from.IP, buf[:n])
+		DebugLogPrintf("<----- serve serveData conn.ReadFromIP [[%s]] end", from.IP)
 		err = t.serveData(from.IP, buf[:n])
-		DebugLogPrintf("serve %s serveData end %s", from.IP, buf[:n])
 		if err != nil {
 			continue
 		}
@@ -197,18 +196,17 @@ func (t *Tracer) serveData(from net.IP, b []byte) error {
 	}
 	now := time.Now()
 	msg, err := icmp.ParseMessage(ProtocolICMP, b)
-	DebugLogPrintf("%s ~~serveData ParseMessage msg is %v ", from, msg)
 	if err != nil {
-		DebugLogPrintf("%s ~~!!!!!!! err is %s ", from, err)
+		DebugLogPrintf("<----- !!!!!!!from [[%s]] err is %s ", from, err)
 		return err
 	}
 	if msg.Type == ipv4.ICMPTypeEchoReply {
 		echo := msg.Body.(*icmp.Echo)
-		DebugLogPrintf("%s ~~ echo is %s ", from, echo.Data)
+		DebugLogPrintf("<----- serveData ParseMessage msg from [[%s]] type is ICMPTypeEchoReply", from)
 		return t.serveReply(from, &packet{from, uint16(echo.ID), 1, now})
 	}
 	b = getReplyData(msg)
-	DebugLogPrintf("%s ~~serveData ReplyData is %s ", from, b)
+	DebugLogPrintf("<----- from %s ~~serveData ReplyData ", from)
 	if len(b) < ipv4.HeaderLen {
 		return errMessageTooShort
 	}
@@ -235,7 +233,7 @@ func (t *Tracer) sendRequest(dst net.IP, ttl int) (*packet, error) {
 	b := newPacket(id, dst, ttl)
 	req := &packet{dst, id, ttl, time.Now()}
 	n, err := t.conn.WriteToIP(b, &net.IPAddr{IP: dst})
-	DebugLogPrintf("ip[%v] sendRequest conn.WriteToIP return %v  ", dst, n)
+	DebugLogPrintf("ip[%v] PING...%v  ", dst, n)
 	if err != nil {
 		return nil, err
 	}
@@ -385,10 +383,13 @@ func shortIP(ip net.IP) net.IP {
 func getReplyData(msg *icmp.Message) []byte {
 	switch b := msg.Body.(type) {
 	case *icmp.TimeExceeded:
+		DebugLogPrintf("<----- getReplyData msg is TimeExceeded ")
 		return b.Data
 	case *icmp.DstUnreach:
+		DebugLogPrintf("<----- getReplyData  msg is DstUnreach ")
 		return b.Data
 	case *icmp.ParamProb:
+		DebugLogPrintf("<----- getReplyData  msg is ParamProb ")
 		return b.Data
 	}
 	return nil
@@ -475,7 +476,7 @@ func (h *Hop) Add(r *Reply) *Node {
 func Trace(ip net.IP) ([]*Hop, error) {
 	hops := make([]*Hop, 0, DefaultTracer.MaxHops)
 	touch := func(dist int) *Hop {
-		DebugLogPrintf("%s Tracea touch hops is %v ", ip, dist)
+		DebugLogPrintf("ip[%s] Trace touch func exec: hops is %v ", ip, dist)
 		for _, h := range hops {
 			if h.Distance == dist {
 				return h
@@ -489,7 +490,6 @@ func Trace(ip net.IP) ([]*Hop, error) {
 	//DebugLogPrintf("%v DefaultTracer.Trace begin ", ip)
 
 	err := DefaultTracer.Trace(context.Background(), ip, func(r *Reply) {
-		DebugLogPrintf("ip[%v] DefaultTracer.Trace h func exec  ", ip)
 		touch(r.Hops).Add(r)
 	})
 
