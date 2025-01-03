@@ -31,7 +31,7 @@ func main() {
 	if GlobalTestMode {
 		//timeoutSecond = 7
 		ips = ips[:0]
-		ips = append(ips, "8.220.218.185")
+		ips = append(ips, "219.141.140.10")
 	} else {
 		network_info()
 	}
