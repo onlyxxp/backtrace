@@ -30,8 +30,8 @@ func main() {
 	var timeoutSecond = 10
 	if GlobalTestMode {
 		//timeoutSecond = 7
-		ips = ips[:0]
-		ips = append(ips, "219.141.140.10")
+		//ips = ips[:0]
+		//ips = append(ips, "219.141.140.10")
 	} else {
 		network_info()
 	}
@@ -65,7 +65,6 @@ loop:
 		}
 	}
 
-	fmt.Println("")
 	fmt.Println("")
 	for index, r := range s {
 		fmt.Println(r)

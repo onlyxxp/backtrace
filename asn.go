@@ -34,7 +34,7 @@ var (
 		"AS9808":    "移动CMI  [普通线路]",
 		"AS58453":   "移动CMI  [普通线路]",
 		"AS-CTG-CN": "电信CTGCN[优化线路]",
-		"跳墙":        "路由bug  [跳墙线路]"}
+		"跳墙":        "路由bug  [直连线路]"}
 )
 
 func trace(ch chan Result, i int) {
@@ -75,7 +75,9 @@ func trace(ch chan Result, i int) {
 
 			var duration int64 = 0
 			for _, rtt := range n.RTT {
-				duration += rtt.Milliseconds()
+				if rtt.Milliseconds() > duration {
+					duration = rtt.Milliseconds()
+				}
 			}
 
 			//找到asn
