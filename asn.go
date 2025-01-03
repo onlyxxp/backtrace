@@ -79,7 +79,7 @@ func trace(ch chan Result, i int) {
 			}
 
 			//找到asn
-			s := fmt.Sprintf("%v %-15s %-23s,  rtt::%-4vms", names[i], ips[i], c(as), duration)
+			s := fmt.Sprintf("%v %-15s %-23s,  rtt::%4vms", names[i], ips[i], c(as), duration)
 			ch <- Result{i, s}
 			return
 		}
